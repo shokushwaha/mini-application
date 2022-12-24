@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const router = express.Router();
-
+const { authenticate } = require("../middleware/autheticate")
 // connecting to database for sending data to database
 require('../DB/conn');
 
@@ -15,8 +15,7 @@ router.get('/', (req, res) => {
 });
 
 // router for /register request
-router.post('/register', async (req, res) => {      // using async await
-
+router.post('/register', async (req, res) => {
     const { name, email, phone, work, password, cpassword } = req.body;
 
 
@@ -39,7 +38,6 @@ router.post('/register', async (req, res) => {      // using async await
 
             const r = await user.save();
             // console.log(user);
-            console.log(user);
             if (r)
                 res.status(201).json({ message: "User registered successfully" });
             else
@@ -100,6 +98,11 @@ router.post('/signin', async (req, res) => {
 
 });
 
+// about us page
+router.get("/about", authenticate, (req, res) => {
+    res.send("About");
+    res.send(req.rootUser);
+})
 
 
 // logout
