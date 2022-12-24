@@ -3,18 +3,14 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const router = express.Router();
 const { authenticate } = require("../middleware/autheticate")
-// connecting to database for sending data to database
 require('../DB/conn');
 
-// connecting to userschema
 const User = require('../Model/userSchema');
 
-// setting router for / request
 router.get('/', (req, res) => {
     res.send("Router call");
 });
 
-// router for /register request
 router.post('/register', async (req, res) => {
     const { name, email, phone, work, password, cpassword } = req.body;
 
@@ -34,11 +30,8 @@ router.post('/register', async (req, res) => {
         }
         else {
             const user = new User({ name, email, phone, work, password, cpassword });
-            // hash vala function call hogas
 
-            const r = await user.save();
-            // console.log(user);
-            if (r)
+            const r = await user.save(); if (r)
                 res.status(201).json({ message: "User registered successfully" });
             else
                 res.status(500).json({ error: "failed" });
@@ -61,21 +54,16 @@ router.post('/signin', async (req, res) => {
         let token;
         const { email, password } = req.body;
 
-        // any field is missing
         if (!email || !password)
             return res.status(400).json({ error: "Fill the details" });
 
-        // if email is in database or not
         const lgnDtl = await User.findOne({ email: email });
 
-        // verifiying the password
         if (lgnDtl) {
             const pwdMth = await bcrypt.compare(password, lgnDtl.password);
 
             token = await lgnDtl.generateAuthToken();
-            // console.log(token);
 
-            // storing token in cookie         
             res.cookie("jwtoken", token, {
                 expires: new Date(Date.now() + 25892000000),
                 httpOnly: true
