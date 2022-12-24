@@ -61,19 +61,17 @@ router.post('/signin', async (req, res) => {
 
         if (lgnDtl) {
             const pwdMth = await bcrypt.compare(password, lgnDtl.password);
-
-            token = await lgnDtl.generateAuthToken();
-
-            res.cookie("jwtoken", token, {
-                expires: new Date(Date.now() + 25892000000),
-                httpOnly: true
-            });
-
-
             if (!pwdMth) {
                 res.status(400).json({ error: "Invalid credentials" });
             }
+
             else {
+                token = await lgnDtl.generateAuthToken();
+
+                res.cookie("jwtoken", token, {
+                    expires: new Date(Date.now() + 25892000000),
+                    httpOnly: true
+                });
                 res.status(201).json({ message: "Sign in successful" });
             }
         }
@@ -88,7 +86,6 @@ router.post('/signin', async (req, res) => {
 
 // about us page
 router.get("/about", authenticate, (req, res) => {
-    res.send("About");
     res.send(req.rootUser);
 })
 

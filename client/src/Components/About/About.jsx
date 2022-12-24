@@ -18,7 +18,8 @@ export default function About() {
 
       const data = res.json();
 
-      if (!res.status === 201) {
+      if (res.status === 401) {
+        alert("You are unauthorized to view this page")
         const error = new Error(res.error);
         throw error;
       }
